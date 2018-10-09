@@ -16,6 +16,11 @@ import logging
 log = logging.getLogger(__name__)
 
 
+import urllib
+import urllib.parse
+import urllib.request
+import ast
+
 class MerchantClient(Client.DESClient):
     """ fetch product info by product id
         :param productId
@@ -38,6 +43,7 @@ class MerchantClient(Client.DESClient):
     def createDataExchangeRequest(self, productId, params):
         # research products information
         productResult = self.getProduct(productId)
+        # print(productResult) #TODO for test
         result = productResult
         if not result.get("onlineDatasources"):
             raise exceptions.InvalidOnlineDatasourcesException("there is no dataSource")
@@ -72,7 +78,7 @@ class MerchantClient(Client.DESClient):
                              }
             requestParams["signatures"] = [self.signature(util.serialization(requestParams), self.privateKey)]
             req = {"requestParams": requestParams,
-                   "nonce": random.getrandbits(64),
+                   "nonce": random.getrandbits(63),
                    }
             req["params"] = self.encrypt(self.privateKey,
                                          dataSourceAccount.get("publicKey"),
@@ -84,12 +90,28 @@ class MerchantClient(Client.DESClient):
             raise exceptions.InvalidTxParamsException("dataExchange request is empty")
         # send request of creating data exchange
         log.info("create request of data exchange.")
+
+        # data = json.dumps(dataExchangeReqList).encode('utf-8')
+        # headers = {'content-type': 'application/json'}
+        # print(self.baseUrl + "/api/request/create/%s" % productId)
+        # req = urllib.request.Request(self.baseUrl + "/api/request/create/%s" % productId, data=data, headers=headers)
+        # res = urllib.request.urlopen(req)
+        # result = res.read().decode("utf-8")
+        # print("data:", result, type(result))
+        # print(ast.literal_eval(result))
+        # return ast.literal_eval(result).get("request_id")
+
         response = requests.post(self.baseUrl + "/api/request/create/%s" % productId, data=json.dumps(dataExchangeReqList), headers={'content-type': 'application/json'})
+        # print("\n=====request=====\nurl:\n", self.baseUrl + "/api/request/create/%s" % productId, "\ndata:\n", json.dumps(dataExchangeReqList), "\nheaders:\n", {'content-type': 'application/json'}) #TODO for test
+        # print("\n=====response=====\n", response, response.text, response.content, response.status_code, "\n") # TODO for test
         result = {}
         if response.status_code == requests.codes.ok:
             result = response.json()
+        else:
+            log.error(response.status_code)
         log.info("complete request of data exchange: %s." % result.get('request_id'))
         return result.get("request_id")
+
 
     """ fetch result by request id
         :param requestId
@@ -143,18 +165,24 @@ class MerchantClient(Client.DESClient):
         :returns signatured data(hex string)
     """
     def signature(self, requestParams, privateKey):
-        log.debug("GXC7XzFVivuBtuc2rz3Efkb41JCN4KH7iENAx9rch9QkowEmc4UvVeady to sign.")
-        sign = util.sign(requestParams, privateKey)
+        log.debug(privateKey, " to sign.")
+        sign = util.sign(requestParams, privateKey)# "bankCardNo": "6236681540015259109"
         log.debug("sign done")
         return encode_hex(sign)[2:]
 
 if __name__ == "__main__":
     client = MerchantClient('5K8iH1jMJxn8TKXXgHJHjkf8zGXsbVPvrCLvU2GekDh2nk4ZPSF', '1.2.323', 'http://192.168.1.124:6388')
     result = client.createDataExchangeRequest(9, {
-        "bankCardNo": "6236681540015259109"
+        "bankCardNo": "6236681540015259109",
+        # "name": "黄志勇",
+        # "idcard": "420702198702167354",
+        # "phone": "18867105786",
     })
+    # print("\nresultid: %s" % result, "\n") #TODO for test
     response = client.getResult(result)
     if response.get("datasources") is not None:
+        # print(k, "/", i)
+        # k += 1
         for data in response.get("datasources"):
             print(data.get("data"))
     else:
