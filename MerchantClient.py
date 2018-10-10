@@ -43,7 +43,7 @@ class MerchantClient(Client.DESClient):
     def createDataExchangeRequest(self, productId, params):
         # research products information
         productResult = self.getProduct(productId)
-        # print(productResult) #TODO for test
+        print(productResult) #TODO for test
         result = productResult
         if not result.get("onlineDatasources"):
             raise exceptions.InvalidOnlineDatasourcesException("there is no dataSource")
@@ -102,8 +102,8 @@ class MerchantClient(Client.DESClient):
         # return ast.literal_eval(result).get("request_id")
 
         response = requests.post(self.baseUrl + "/api/request/create/%s" % productId, data=json.dumps(dataExchangeReqList), headers={'content-type': 'application/json'})
-        # print("\n=====request=====\nurl:\n", self.baseUrl + "/api/request/create/%s" % productId, "\ndata:\n", json.dumps(dataExchangeReqList), "\nheaders:\n", {'content-type': 'application/json'}) #TODO for test
-        # print("\n=====response=====\n", response, response.text, response.content, response.status_code, "\n") # TODO for test
+        print("\n=====request=====\nurl:\n", self.baseUrl + "/api/request/create/%s" % productId, "\ndata:\n", json.dumps(dataExchangeReqList), "\nheaders:\n", {'content-type': 'application/json'}) #TODO for test
+        print("\n=====response=====\n", response, response.text, response.content, response.status_code, "\n") # TODO for test
         result = {}
         if response.status_code == requests.codes.ok:
             result = response.json()
@@ -166,17 +166,17 @@ class MerchantClient(Client.DESClient):
     """
     def signature(self, requestParams, privateKey):
         log.debug(privateKey, " to sign.")
-        sign = util.sign(requestParams, privateKey)# "bankCardNo": "6236681540015259109"
+        sign = util.sign(requestParams, privateKey)# "bankCardNo": "623668154001525XXXX"
         log.debug("sign done")
         return encode_hex(sign)[2:]
 
 if __name__ == "__main__":
-    client = MerchantClient('5K8iH1jMJxn8TKXXgHJHjkf8zGXsbVPvrCLvU2GekDh2nk4ZPSF', '1.2.323', 'http://192.168.1.124:6388')
+    client = MerchantClient('5K8iH1jMJxn8TKXXgHJHjkf8zGXsbVPvrCLvU2GekDh2nXXXXXX', '1.2.XXX', 'http://192.168.1.124:XXX')
     result = client.createDataExchangeRequest(9, {
-        "bankCardNo": "6236681540015259109",
+        "bankCardNo": "623668154001525XXXX",
         # "name": "黄志勇",
-        # "idcard": "420702198702167354",
-        # "phone": "18867105786",
+        # "idcard": "42070219870216XXXX",
+        # "phone": "1886710XXXX",
     })
     # print("\nresultid: %s" % result, "\n") #TODO for test
     response = client.getResult(result)
