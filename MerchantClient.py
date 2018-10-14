@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-# coding=utf-8
+
+# -*- coding: utf-8 -*-
 
 import Client
 import sys
@@ -13,6 +13,7 @@ import Common.util as util
 import Common.memo as AES
 from Common import exceptions as exceptions
 import requests
+from binascii import unhexlify
 import logging
 log = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ class MerchantClient(Client.DESClient):
     def createDataExchangeRequest(self, productId, params):
         # research products information
         productResult = self.getProduct(productId)
-        # print(productResult) #TODO for test
+        print(productResult) #TODO for test
         result = productResult
         if not result.get("onlineDatasources"):
             raise exceptions.InvalidOnlineDatasourcesException("there is no dataSource")
@@ -104,7 +105,7 @@ class MerchantClient(Client.DESClient):
         # return ast.literal_eval(result).get("request_id")
 
         response = requests.post(self.baseUrl + "/api/request/create/%s" % productId, data=json.dumps(dataExchangeReqList), headers={'content-type': 'application/json'})
-        print("=====request=====url: ", self.baseUrl + "/api/request/create/%s" % productId, "data: ", json.dumps(dataExchangeReqList), "headers: ", {'content-type': 'application/json'}) #TODO for test
+        print("=====request===== ", self.baseUrl + "/api/request/create/%s" % productId, "data: ", json.dumps(dataExchangeReqList), "headers: ", {'content-type': 'application/json'}) #TODO for test
         print("=====response=====", response, response.text, response.content, response.status_code) # TODO for test
         result = {}
         if response.status_code == requests.codes.ok:
@@ -126,7 +127,10 @@ class MerchantClient(Client.DESClient):
         log.debug("start to poll for the result")
         while True:
             response = requests.get(self.baseUrl + "/api/request/%s" % requestId)
-            print("======getresult======", response.text, response.status_code)
+            print("======get exchange result on chain======") #TODO for test
+            print(response.text) #TODO for test
+            print(response.status_code) #TODO for test
+
             dataExchange = {}
             if response.status_code == requests.codes.ok:
                 dataExchange = response.json()
@@ -174,23 +178,26 @@ class MerchantClient(Client.DESClient):
         return util.encode_hex(sign)
 
 if __name__ == "__main__":
-    client = MerchantClient('5K8iH1jMJxn8TKXXgHJHjkf8zGXsbVPvrCLvU2GekDh2nk4ZPSF', '1.2.323', 'http://192.168.1.124:6388')
+    client = MerchantClient('5K8iH1jMJxn8TKXXgHJHjkf8zGXsbVPvrCLvU2GekDh2n....', '1.2.....', 'http://192.168.1.124:6388')
 
     k = 1
     for i in range(1000):
-        result = client.createDataExchangeRequest(9, {
-            "bankCardNo": "6236681540015259109",
-            # "name": "黄志勇",
-            # "idcard": "420702198702167354",
+        result = client.createDataExchangeRequest(3, {
+            # "bankCardNo": "6236681540015259109",
+            "name": "黄志勇",
+            "idcard": "42070219870......",
             # "phone": "18867105786",
+            "mobile": "1886710....",
         })
-        print("\nresultid: %s" % result, "\n") #TODO for test
+        print("======get create exchange repsonse======")  # TODO for test
+        print(result) #TODO for test
         response = client.getResult(result)
         if response.get("datasources") is not None:
             print(k, "/", i)
             k += 1
             for data in response.get("datasources"):
-                print(type(data.get("data")), data.get("data"))
+                print(data.get("data"))
+                # print(json.dump)
         else:
             print("response is None, please try more")
 

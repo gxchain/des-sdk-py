@@ -23,10 +23,8 @@ def varint(n):
     else:
         while n >= 0x80:
             data += struct.pack("B", (n & 0x7f) | 0x80)
-            print data
             n >>= 7
         data += struct.pack("B", n)
-        print data
         data = str(data)
 
     return data
@@ -168,7 +166,8 @@ class String():
                 r.append("u%04x" % o)
             else:
                 r.append(s)
-        return bytes("".join(r), "utf-8")
+        return bytes("".join(r), "utf-8") if sys.version > '3' else bytes("".join(r)).encode("utf8")
+
 
 
 class Bytes():

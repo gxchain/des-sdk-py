@@ -69,10 +69,16 @@ def _pad(s, BS):
 
 
 def _unpad(s, BS):
-    count = int(struct.unpack('B', bytes(s[-1], 'ascii'))[0])
-    if bytes(s[-count::], 'ascii') == count * struct.pack('B', count):
-        return s[:-count]
-    return s
+    if sys.version > '3':
+        count = int(struct.unpack('B', bytes(s[-1], 'ascii'))[0])
+        if bytes(s[-count::], 'ascii') == count * struct.pack('B', count):
+            return s[:-count]
+        return s
+    else:
+        count = int(struct.unpack('B', bytes(s[-1]).encode('ascii'))[0])
+        if bytes(s[-count::]).encode('ascii') == count * struct.pack('B', count):
+            return s[:-count]
+        return s
 
 
 def encode_memo(priv, pub, nonce, message):
