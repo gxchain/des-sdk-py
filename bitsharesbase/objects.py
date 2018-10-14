@@ -74,7 +74,7 @@ class Asset(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(Asset, self).__init__(OrderedDict([
                 ('amount', Int64(kwargs["amount"])),
                 ('assetId', ObjectId(kwargs["assetId"], "asset"))
             ]))
@@ -89,14 +89,14 @@ class Memo(GrapheneObject):
                 kwargs = args[0]
             prefix = kwargs.pop("prefix", default_prefix)
             if "message" in kwargs and kwargs["message"]:
-                super().__init__(OrderedDict([
+                super(Memo, self).__init__(OrderedDict([
                     ('from', PublicKey(kwargs["from"], prefix=prefix)),
                     ('to', PublicKey(kwargs["to"], prefix=prefix)),
                     ('nonce', Uint64(int(kwargs["nonce"]))),
                     ('message', Bytes(kwargs["message"]))
                 ]))
             else:
-                super().__init__(None)
+                super(Memo, self).__init__(None)
 
 
 class Price(GrapheneObject):
@@ -106,7 +106,7 @@ class Price(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(Price, self).__init__(OrderedDict([
                 ('base', Asset(kwargs["base"])),
                 ('quote', Asset(kwargs["quote"]))
             ]))
@@ -119,7 +119,7 @@ class PriceFeed(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(PriceFeed, self).__init__(OrderedDict([
                 ('settlement_price', Price(kwargs["settlement_price"])),
                 ('maintenance_collateral_ratio', Uint16(kwargs["maintenance_collateral_ratio"])),
                 ('maximum_short_squeeze_ratio', Uint16(kwargs["maximum_short_squeeze_ratio"])),
@@ -152,7 +152,7 @@ class Permission(GrapheneObject):
                 [PublicKey(e[0], prefix=prefix), Uint16(e[1])]
                 for e in kwargs["key_auths"]
             ])
-            super().__init__(OrderedDict([
+            super(Permission, self).__init__(OrderedDict([
                 ('weight_threshold', Uint32(int(kwargs["weight_threshold"]))),
                 ('account_auths', accountAuths),
                 ('key_auths', keyAuths),
@@ -177,7 +177,7 @@ class AccountOptions(GrapheneObject):
                 kwargs["votes"],
                 key=lambda x: float(x.split(":")[1]),
             )
-            super().__init__(OrderedDict([
+            super(AccountOptions, self).__init__(OrderedDict([
                 ('memo_key', PublicKey(kwargs["memo_key"], prefix=prefix)),
                 ('voting_account', ObjectId(kwargs["voting_account"], "account")),
                 ('num_witness', Uint16(kwargs["num_witness"])),
@@ -194,7 +194,7 @@ class AssetOptions(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(AssetOptions, self).__init__(OrderedDict([
                 ('max_supply', Int64(kwargs["max_supply"])),
                 ('market_fee_percent', Uint16(kwargs["market_fee_percent"])),
                 ('max_market_fee', Int64(kwargs["max_market_fee"])),
@@ -221,7 +221,7 @@ class BitAssetOptions(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(BitAssetOptions, self).__init__(OrderedDict([
                 ('feed_lifetime_sec', Uint32(kwargs["feed_lifetime_sec"])),
                 ('minimum_feeds', Uint8(kwargs["minimum_feeds"])),
                 ('force_settlement_delay_sec', Uint32(kwargs["force_settlement_delay_sec"])),
@@ -238,11 +238,11 @@ class Worker_initializer(Static_variant):
 
         class Burn_worker_initializer(GrapheneObject):
             def __init__(self, kwargs):
-                super().__init__(OrderedDict([]))
+                super(Burn_worker_initializer, self).__init__(OrderedDict([]))
 
         class Refund_worker_initializer(GrapheneObject):
             def __init__(self, kwargs):
-                super().__init__(OrderedDict([]))
+                super(Refund_worker_initializer, self).__init__(OrderedDict([]))
 
         class Vesting_balance_worker_initializer(GrapheneObject):
             def __init__(self, *args, **kwargs):
@@ -251,7 +251,7 @@ class Worker_initializer(Static_variant):
                 else:
                     if len(args) == 1 and len(kwargs) == 0:
                         kwargs = args[0]
-                    super().__init__(OrderedDict([
+                    super(Vesting_balance_worker_initializer, self).__init__(OrderedDict([
                         ('pay_vesting_period_days', Uint16(kwargs["pay_vesting_period_days"])),
                     ]))
 
@@ -264,7 +264,7 @@ class Worker_initializer(Static_variant):
             data = Burn_worker_initializer(o[1])
         else:
             raise Exception("Unknown Worker_initializer")
-        super().__init__(data, id)
+        super(Worker_initializer, self).__init__(data, id)
 
 
 class SpecialAuthority(Static_variant):
@@ -272,11 +272,11 @@ class SpecialAuthority(Static_variant):
 
         class No_special_authority(GrapheneObject):
             def __init__(self, kwargs):
-                super().__init__(OrderedDict([]))
+                super(No_special_authority, self).__init__(OrderedDict([]))
 
         class Top_holders_special_authority(GrapheneObject):
             def __init__(self, kwargs):
-                super().__init__(OrderedDict([
+                super(Top_holders_special_authority, self).__init__(OrderedDict([
                     ('asset', ObjectId(kwargs["asset"], "asset")),
                     ('num_top_holders', Uint8(kwargs["num_top_holders"])),
                 ]))
@@ -288,7 +288,7 @@ class SpecialAuthority(Static_variant):
             data = Top_holders_special_authority(o[1])
         else:
             raise Exception("Unknown SpecialAuthority")
-        super().__init__(data, id)
+        super(SpecialAuthority, self).__init__(data, id)
 
 
 class Extension(Array):
@@ -304,15 +304,15 @@ class AccountCreateExtensions(Extension):
         # Extensions #################################
         class Null_ext(GrapheneObject):
             def __init__(self, kwargs):
-                super().__init__(OrderedDict([]))
+                super(Null_ext, self).__init__(OrderedDict([]))
 
         class Owner_special_authority(SpecialAuthority):
             def __init__(self, kwargs):
-                super().__init__(kwargs)
+                super(Owner_special_authority, self).__init__(kwargs)
 
         class Active_special_authority(SpecialAuthority):
             def __init__(self, kwargs):
-                super().__init__(kwargs)
+                super(Active_special_authority, self).__init__(kwargs)
 
         class Buyback_options(GrapheneObject):
             def __init__(self, kwargs):
@@ -322,7 +322,7 @@ class AccountCreateExtensions(Extension):
                     if len(args) == 1 and len(kwargs) == 0:
                         kwargs = args[0]
 #                    assert "1.3.0" in kwargs["markets"], "CORE asset must be in 'markets' to pay fees"
-                    super().__init__(OrderedDict([
+                    super(Buyback_options, self).__init__(OrderedDict([
                         ('asset_to_buy', ObjectId(kwargs["asset_to_buy"], "asset")),
                         ('asset_to_buy_issuer', ObjectId(kwargs["asset_to_buy_issuer"], "account")),
                         ('markets', Array([
@@ -370,4 +370,4 @@ class AccountCreateExtensions(Extension):
             else:
                 raise NotImplementedError("Extension {} is unknown".format(key))
 
-        super().__init__(a)
+        super(AccountCreateExtensions, self).__init__(a)

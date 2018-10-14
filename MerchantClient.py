@@ -2,24 +2,20 @@
 # coding=utf-8
 
 import Client
+import sys
 import json
 import Common.validator as validator
 import time
 import Common.constants as constants
 import random
 import Common.util as util
-from eth_utils import encode_hex
+# from eth_utils import encode_hex
 import Common.memo as AES
 from Common import exceptions as exceptions
 import requests
 import logging
 log = logging.getLogger(__name__)
 
-
-import urllib
-import urllib.parse
-import urllib.request
-import ast
 
 class MerchantClient(Client.DESClient):
     """ fetch product info by product id
@@ -43,7 +39,7 @@ class MerchantClient(Client.DESClient):
     def createDataExchangeRequest(self, productId, params):
         # research products information
         productResult = self.getProduct(productId)
-        print(productResult) #TODO for test
+        # print(productResult) #TODO for test
         result = productResult
         if not result.get("onlineDatasources"):
             raise exceptions.InvalidOnlineDatasourcesException("there is no dataSource")
@@ -54,6 +50,12 @@ class MerchantClient(Client.DESClient):
                  "timestamp": int(time.time())
                  }
         param = str(param)
+
+        # TODO for py2&3
+        if sys.version_info < (3, 0):
+            param23 = bytes(param).encode('utf8')
+        else:
+            param23 = bytes(param, 'utf8')
         expiration = int(time.time()) + constants.DEFAULT_TIMEOUT
         dataExchangeReqList = []
 
@@ -72,7 +74,7 @@ class MerchantClient(Client.DESClient):
                              "to": dataSourceAccount.get("accountId"),
                              "proxyAccount": result.get("des").get("accountId"),
                              "percent": result.get("des").get("percent"),
-                             "memo": util.md5Encode(bytes(param, "utf8")),  #temporary method for the situation that param is dict.
+                             "memo": util.md5Encode(param23), #TODO for python3 & 2
                              "expiration": expiration,
                              "amount": amount,
                              }
@@ -102,8 +104,8 @@ class MerchantClient(Client.DESClient):
         # return ast.literal_eval(result).get("request_id")
 
         response = requests.post(self.baseUrl + "/api/request/create/%s" % productId, data=json.dumps(dataExchangeReqList), headers={'content-type': 'application/json'})
-        print("\n=====request=====\nurl:\n", self.baseUrl + "/api/request/create/%s" % productId, "\ndata:\n", json.dumps(dataExchangeReqList), "\nheaders:\n", {'content-type': 'application/json'}) #TODO for test
-        print("\n=====response=====\n", response, response.text, response.content, response.status_code, "\n") # TODO for test
+        print("=====request=====url: ", self.baseUrl + "/api/request/create/%s" % productId, "data: ", json.dumps(dataExchangeReqList), "headers: ", {'content-type': 'application/json'}) #TODO for test
+        print("=====response=====", response, response.text, response.content, response.status_code) # TODO for test
         result = {}
         if response.status_code == requests.codes.ok:
             result = response.json()
@@ -124,6 +126,7 @@ class MerchantClient(Client.DESClient):
         log.debug("start to poll for the result")
         while True:
             response = requests.get(self.baseUrl + "/api/request/%s" % requestId)
+            print("======getresult======", response.text, response.status_code)
             dataExchange = {}
             if response.status_code == requests.codes.ok:
                 dataExchange = response.json()
@@ -166,24 +169,29 @@ class MerchantClient(Client.DESClient):
     """
     def signature(self, requestParams, privateKey):
         log.debug(privateKey, " to sign.")
-        sign = util.sign(requestParams, privateKey)# "bankCardNo": "623668154001525XXXX"
+        sign = util.sign(requestParams, privateKey)# "bankCardNo": "6236681540015259109"
         log.debug("sign done")
-        return encode_hex(sign)[2:]
+        return util.encode_hex(sign)
 
 if __name__ == "__main__":
-    client = MerchantClient('5K8iH1jMJxn8TKXXgHJHjkf8zGXsbVPvrCLvU2GekDh2nXXXXXX', '1.2.XXX', 'http://192.168.1.124:XXX')
-    result = client.createDataExchangeRequest(9, {
-        "bankCardNo": "623668154001525XXXX",
-        # "name": "黄志勇",
-        # "idcard": "42070219870216XXXX",
-        # "phone": "1886710XXXX",
-    })
-    # print("\nresultid: %s" % result, "\n") #TODO for test
-    response = client.getResult(result)
-    if response.get("datasources") is not None:
-        # print(k, "/", i)
-        # k += 1
-        for data in response.get("datasources"):
-            print(data.get("data"))
-    else:
-        print("response is None, please try more")
+    client = MerchantClient('5K8iH1jMJxn8TKXXgHJHjkf8zGXsbVPvrCLvU2GekDh2nk4ZPSF', '1.2.323', 'http://192.168.1.124:6388')
+
+    k = 1
+    for i in range(1000):
+        result = client.createDataExchangeRequest(9, {
+            "bankCardNo": "6236681540015259109",
+            # "name": "黄志勇",
+            # "idcard": "420702198702167354",
+            # "phone": "18867105786",
+        })
+        print("\nresultid: %s" % result, "\n") #TODO for test
+        response = client.getResult(result)
+        if response.get("datasources") is not None:
+            print(k, "/", i)
+            k += 1
+            for data in response.get("datasources"):
+                print(type(data.get("data")), data.get("data"))
+        else:
+            print("response is None, please try more")
+
+

@@ -84,7 +84,7 @@ class Transfer(GrapheneObject):
                     memo = Optional(Memo(kwargs["memo"]))
             else:
                 memo = Optional(None)
-            super().__init__(OrderedDict([
+            super(Transfer, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('from', ObjectId(kwargs["from"], "account")),
                 ('to', ObjectId(kwargs["to"], "account")),
@@ -101,7 +101,7 @@ class Asset_publish_feed(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(Asset_publish_feed, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('publisher', ObjectId(kwargs["publisher"], "account")),
                 ('asset_id', ObjectId(kwargs["asset_id"], "asset")),
@@ -121,7 +121,7 @@ class Asset_create(GrapheneObject):
                 bitasset_opts = Optional(BitAssetOptions(kwargs["bitasset_opts"]))
             else:
                 bitasset_opts = Optional(None)
-            super().__init__(OrderedDict([
+            super(Asset_create, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('issuer', ObjectId(kwargs["issuer"], "account")),
                 ('symbol', String(kwargs["symbol"])),
@@ -144,7 +144,7 @@ class Asset_update(GrapheneObject):
                 new_issuer = Optional(ObjectId(kwargs["new_issuer"], "account"))
             else:
                 new_issuer = Optional(None)
-            super().__init__(OrderedDict([
+            super(Asset_update, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('issuer', ObjectId(kwargs["issuer"], "account")),
                 ('asset_to_update', ObjectId(kwargs["asset_to_update"], "asset")),
@@ -161,7 +161,7 @@ class Asset_update_bitasset(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(Asset_update_bitasset, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('issuer', ObjectId(kwargs["issuer"], "account")),
                 ('asset_to_update', ObjectId(kwargs["asset_to_update"], "asset")),
@@ -183,7 +183,7 @@ class Asset_issue(GrapheneObject):
                 memo = Optional(Memo(prefix=prefix, **kwargs["memo"]))
             else:
                 memo = Optional(None)
-            super().__init__(OrderedDict([
+            super(Asset_issue, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('issuer', ObjectId(kwargs["issuer"], "account")),
                 ('asset_to_issue', Asset(kwargs["asset_to_issue"])),
@@ -200,7 +200,7 @@ class Op_wrapper(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(Op_wrapper, self).__init__(OrderedDict([
                 ('op', Operation(kwargs["op"])),
             ]))
 
@@ -216,7 +216,7 @@ class Proposal_create(GrapheneObject):
                 review = Optional(Uint32(kwargs["review_period_seconds"]))
             else:
                 review = Optional(None)
-            super().__init__(OrderedDict([
+            super(Proposal_create, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('fee_paying_account', ObjectId(kwargs["fee_paying_account"], "account")),
                 ('expiration_time', PointInTime(kwargs["expiration_time"])),
@@ -244,7 +244,7 @@ class Proposal_update(GrapheneObject):
                 if o not in kwargs:
                     kwargs[o] = []
 
-            super().__init__(OrderedDict([
+            super(Proposal_update, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('fee_paying_account', ObjectId(kwargs["fee_paying_account"], "account")),
                 ('proposal', ObjectId(kwargs["proposal"], "proposal")),
@@ -271,7 +271,7 @@ class Limit_order_create(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(Limit_order_create, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('seller', ObjectId(kwargs["seller"], "account")),
                 ('amount_to_sell', Asset(kwargs["amount_to_sell"])),
@@ -289,7 +289,7 @@ class Limit_order_cancel(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(Limit_order_cancel, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('fee_paying_account', ObjectId(kwargs["fee_paying_account"], "account")),
                 ('order', ObjectId(kwargs["order"], "limit_order")),
@@ -304,7 +304,7 @@ class Call_order_update(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(Call_order_update, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('funding_account', ObjectId(kwargs["funding_account"], "account")),
                 ('delta_collateral', Asset(kwargs["delta_collateral"])),
@@ -320,7 +320,7 @@ class Asset_fund_fee_pool(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(Asset_fund_fee_pool, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('from_account', ObjectId(kwargs["from_account"], "account")),
                 ('asset_id', ObjectId(kwargs["asset_id"], "asset")),
@@ -340,7 +340,7 @@ class Override_transfer(GrapheneObject):
                 memo = Optional(Memo(kwargs["memo"]))
             else:
                 memo = Optional(None)
-            super().__init__(OrderedDict([
+            super(Override_transfer, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('issuer', ObjectId(kwargs["issuer"], "account")),
                 ('from', ObjectId(kwargs["from"], "account")),
@@ -362,7 +362,7 @@ class Account_create(GrapheneObject):
                 kwargs = args[0]
             prefix = kwargs.get("prefix", default_prefix)
 
-            super().__init__(OrderedDict([
+            super(Account_create, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('registrar', ObjectId(kwargs["registrar"], "account")),
                 ('referrer', ObjectId(kwargs["referrer"], "account")),
@@ -400,7 +400,7 @@ class Account_update(GrapheneObject):
             else:
                 options = Optional(None)
 
-            super().__init__(OrderedDict([
+            super(Account_update, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('account', ObjectId(kwargs["account"], "account")),
                 ('owner', owner),
@@ -423,7 +423,7 @@ class Account_whitelist(GrapheneObject):
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
 
-            super().__init__(OrderedDict([
+            super(Account_whitelist, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('authorizing_account', ObjectId(kwargs["authorizing_account"], "account")),
                 ('account_to_list', ObjectId(kwargs["account_to_list"], "account")),
@@ -440,7 +440,7 @@ class Vesting_balance_withdraw(GrapheneObject):
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
 
-            super().__init__(OrderedDict([
+            super(Vesting_balance_withdraw, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('vesting_balance', ObjectId(kwargs["vesting_balance"], "vesting_balance")),
                 ('owner', ObjectId(kwargs["owner"], "account")),
@@ -455,7 +455,7 @@ class Account_upgrade(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(Account_upgrade, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('account_to_upgrade', ObjectId(kwargs["account_to_upgrade"], "account")),
                 ('upgrade_to_lifetime_member', Bool(kwargs["upgrade_to_lifetime_member"])),
@@ -480,7 +480,7 @@ class Witness_update(GrapheneObject):
             else:
                 new_signing_key = Optional(None)
 
-            super().__init__(OrderedDict([
+            super(Witness_update, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('witness', ObjectId(kwargs["witness"], "witness")),
                 ('witness_account', ObjectId(kwargs["witness_account"], "account")),
@@ -502,7 +502,7 @@ class Asset_update_feed_producers(GrapheneObject):
                 key=lambda x: float(x.split(".")[2]),
             )
 
-            super().__init__(OrderedDict([
+            super(Asset_update_feed_producers, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('issuer', ObjectId(kwargs["issuer"], "account")),
                 ('asset_to_update', ObjectId(kwargs["asset_to_update"], "asset")),
@@ -520,7 +520,7 @@ class Asset_reserve(GrapheneObject):
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
 
-            super().__init__(OrderedDict([
+            super(Asset_reserve, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('payer', ObjectId(kwargs["payer"], "account")),
                 ('amount_to_reserve', Asset(kwargs["amount_to_reserve"])),
@@ -536,7 +536,7 @@ class Worker_create(GrapheneObject):
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
 
-            super().__init__(OrderedDict([
+            super(Worker_create, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('owner', ObjectId(kwargs["owner"], "account")),
                 ('work_begin_date', PointInTime(kwargs["work_begin_date"])),
@@ -556,7 +556,7 @@ class Bid_collateral(GrapheneObject):
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
 
-            super().__init__(OrderedDict([
+            super(Bid_collateral, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('bidder', ObjectId(kwargs["bidder"], "account")),
                 ('additional_collateral', Asset(
@@ -573,7 +573,7 @@ class Withdraw_permission_create(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(Withdraw_permission_create, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('withdraw_from_account', ObjectId(kwargs["withdraw_from_account"], "account")),
                 ('authorized_account', ObjectId(kwargs["authorized_account"], "account")),
@@ -591,7 +591,7 @@ class Committee_member_create(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(Committee_member_create, self).__init__(OrderedDict([
                 ('fee', Asset(kwargs["fee"])),
                 ('committee_member_account', ObjectId(kwargs["committee_member_account"], "account")),
                 ('url', String(kwargs["url"])),
@@ -605,7 +605,7 @@ class SerialForSignature(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
+            super(SerialForSignature, self).__init__(OrderedDict([
                 ('from', ObjectId(kwargs["from"], "account")),
                 ('to', ObjectId(kwargs["to"], "account")),
                 ('proxy_account', ObjectId(kwargs["proxyAccount"], "account")),

@@ -14,14 +14,14 @@ import struct
 import Common.account as account
 
 " This class and the methods require python3 "
-assert sys.version_info[0] == 3, "this library requires python3"
+# assert sys.version_info[0] == 3, "this library requires python3"
 
 
 def get_shared_secret(priv, pub):
     """ Derive the share secret between ``priv`` and ``pub``
 
         :param `Base58` priv: Private Key
-        :param `Base58` pub: Public Key““
+        :param `Base58` pub: Public Key
         :return: Shared secret
         :rtype: hex
 
@@ -51,7 +51,11 @@ def init_aes(shared_secret, nonce):
     " Shared Secret "
     ss = hashlib.sha512(unhexlify(shared_secret)).digest()
     " Seed "
-    seed = bytes(str(nonce), 'ascii') + hexlify(ss)
+    #TODO for py2&3
+    if sys.version_info < (3, 0):
+        seed = bytes(str(nonce)).encode('ascii') + hexlify(ss)
+    else:
+        seed = bytes(str(nonce), 'ascii') + hexlify(ss)
     seed_digest = hexlify(hashlib.sha512(seed).digest()).decode('ascii')
     " AES "
     key = unhexlify(seed_digest[0:64])
@@ -85,7 +89,11 @@ def encode_memo(priv, pub, nonce, message):
     shared_secret = get_shared_secret(account.PrivateKey(priv), account.PublicKey(pub, prefix="GXC"))
     aes = init_aes(shared_secret, nonce)
     " Checksum "
-    raw = bytes(message, 'utf8')
+    #TODO for py2&3
+    if sys.version_info < (3, 0):
+        raw = bytes(message).encode('utf8')
+    else:
+        raw = bytes(message, 'utf8')
     checksum = hashlib.sha256(raw).digest()
     raw = (checksum[0:4] + raw)
     " Padding "
@@ -113,7 +121,12 @@ def decode_memo(priv, pub, nonce, message):
     shared_secret = get_shared_secret(account.PrivateKey(priv), account.PublicKey(pub, prefix="GXC"))
     aes = init_aes(shared_secret, nonce)
     " Encryption "
-    raw = bytes(message, 'ascii')
+    #
+    #TODO for py2&3
+    if sys.version_info < (3, 0):
+        raw = bytes(message).encode('ascii')
+    else:
+        raw = bytes(message, 'ascii')
     cleartext = aes.decrypt(unhexlify(raw))
     " TODO, verify checksum "
     message = cleartext[4:]

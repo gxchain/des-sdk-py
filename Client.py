@@ -1,4 +1,3 @@
-from jsonrpcclient.clients.http_client import HTTPClient
 
 
 class DESClient(object):
