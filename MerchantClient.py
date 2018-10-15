@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
 import Client
@@ -9,11 +9,9 @@ import time
 import Common.constants as constants
 import random
 import Common.util as util
-# from eth_utils import encode_hex
 import Common.memo as AES
 from Common import exceptions as exceptions
 import requests
-from binascii import unhexlify
 import logging
 log = logging.getLogger(__name__)
 
@@ -50,13 +48,17 @@ class MerchantClient(Client.DESClient):
         param = {"params": params,
                  "timestamp": int(time.time())
                  }
-        param = str(param)
+
+        paramStr = str(param)
+        # paramStr = ast.literal_eval(param)
+        paramJson = json.dumps(param)
+
 
         # TODO for py2&3
         if sys.version_info < (3, 0):
-            param23 = bytes(param).encode('utf8')
+            param23 = bytes(paramJson).encode('utf8')
         else:
-            param23 = bytes(param, 'utf8')
+            param23 = bytes(paramJson, 'utf8')
         expiration = int(time.time()) + constants.DEFAULT_TIMEOUT
         dataExchangeReqList = []
 
@@ -86,7 +88,7 @@ class MerchantClient(Client.DESClient):
             req["params"] = self.encrypt(self.privateKey,
                                          dataSourceAccount.get("publicKey"),
                                          req.get("nonce"),
-                                         param)
+                                         paramJson)
             dataExchangeReqList.append(req)
 
         if not len(dataExchangeReqList):
@@ -178,16 +180,16 @@ class MerchantClient(Client.DESClient):
         return util.encode_hex(sign)
 
 if __name__ == "__main__":
-    client = MerchantClient('5K8iH1jMJxn8TKXXgHJHjkf8zGXsbVPvrCLvU2GekDh2n....', '1.2.....', 'http://192.168.1.124:6388')
+    client = MerchantClient('5K8iH1jMJxn8TKXXgHJHjkf8zGXsbVPvrCLvU2GekDh2n******', '1.2.***', 'http://192.168.1.124:6388')
 
     k = 1
     for i in range(1000):
-        result = client.createDataExchangeRequest(3, {
-            # "bankCardNo": "6236681540015259109",
+        result = client.createDataExchangeRequest(5, {
+            "bankCardNo": "62366815400152*****",
             "name": "黄志勇",
-            "idcard": "42070219870......",
-            # "phone": "18867105786",
-            "mobile": "1886710....",
+            "idcard": "4207021987021*****",
+            "phone": "188671*****",
+            # "mobile": "18867105786",
         })
         print("======get create exchange repsonse======")  # TODO for test
         print(result) #TODO for test

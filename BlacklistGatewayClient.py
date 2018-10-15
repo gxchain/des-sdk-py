@@ -3,7 +3,6 @@ import requests
 import time
 import Common.util as util
 import json
-from eth_utils import encode_hex
 import logging
 log = logging.getLogger(__name__)
 
@@ -37,7 +36,7 @@ class BlacklistGatewayClient(Client.DESClient):
                                    'timestamp': int(time.time()) + 60
                                    }
         tempSig = util.sign(bytes(str(getQuestionReportParmas), 'utf8'), self.privateKey)
-        getQuestionReportParmas['signature'] = encode_hex(tempSig)[2:]
+        getQuestionReportParmas['signature'] = util.encode_hex(tempSig)
         print(getQuestionReportParmas)
         response = requests.post(self.baseUrl + '/question/report', data=json.dumps(getQuestionReportParmas), headers={'content-type': 'application/json'})
         print(response.content, response.text)

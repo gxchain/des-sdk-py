@@ -31,8 +31,8 @@ class_idmap = {}
 class_namemap = {}
 
 #for test
-import time
-from calendar import timegm
+# import time
+# from calendar import timegm
 from datetime import datetime
 
 

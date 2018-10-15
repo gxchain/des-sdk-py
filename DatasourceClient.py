@@ -1,7 +1,6 @@
 import Client
 import time
 from Common import util as util
-import json
 import requests
 import logging
 log = logging.getLogger(__name__)
